@@ -56,7 +56,19 @@ public class AppointmentController {
          * Implement this function, which acts as the POST /api/appointment endpoint.
          * Make sure to check out the whole project. Specially the Appointment.java class
          */
-        return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+        if(appointment.getStartsAt().isAfter(appointment.getFinishesAt())|| appointment.getStartsAt().isEqual(appointment.getFinishesAt())){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST );
+        }
+        List<Appointment> ap= this.appointmentRepository.findAll();
+        for (Appointment appointmenta : ap) {
+            if((appointmenta.getStartsAt().isBefore( appointment.getStartsAt()) && appointmenta.getStartsAt().isAfter( appointment.getFinishesAt())&& appointmenta.getRoom().getRoomName().equals(appointment.getRoom().getRoomName()))||
+               (appointmenta.getStartsAt().isAfter( appointment.getStartsAt()) && appointmenta.getStartsAt().isBefore( appointment.getStartsAt())&& appointmenta.getRoom().getRoomName().equals(appointment.getRoom().getRoomName()))||
+               (appointmenta.getStartsAt().isBefore( appointment.getFinishesAt()) && appointmenta.getFinishesAt().isAfter( appointment.getFinishesAt())&& appointmenta.getRoom().getRoomName().equals(appointment.getRoom().getRoomName()))||
+               (appointmenta.getStartsAt().isEqual( appointment.getStartsAt()) && appointmenta.getFinishesAt().isEqual( appointment.getFinishesAt())&& appointmenta.getRoom().getRoomName().equals(appointment.getRoom().getRoomName()))){
+                return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE );
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
